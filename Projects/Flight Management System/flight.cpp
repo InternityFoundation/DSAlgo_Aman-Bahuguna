@@ -17,95 +17,116 @@ void print(pair<int, int> graph[][20], int n) {
     }
 }
 
-int findMinVertex(int* distance, bool* visited, int n){
+int findMinVertex(int* distance, bool* visited, int n) {
 	int minVertex = -1;
 	for(int i = 0; i < n; i++){
-		if(!visited[i] && (minVertex == -1 ||  distance[i] < distance[minVertex])){
+		if(!visited[i] && (minVertex == -1 ||  distance[i] < distance[minVertex])) {
 			minVertex = i;
 		}
 	}
 	return minVertex;
 }
 
-int Shortest_Path(pair<int, int> graph[][20], int n, int source, int dest){
+pair<int, int> Shortest_Path(pair<int, int> graph[][20], int n, int source, int dest) {
 	int* distance = new int[n];
 	bool* visited = new bool[n];
+	int* fare = new int[n];
 
-	for(int i = 0; i < n; i++){
+	for(int i = 0; i < n; i++) {
 		distance[i] = INT_MAX;
 		visited[i] = false;
+		fare[i] = INT_MAX;
 	}
 
 	distance[source] = 0;
+	fare[source] = 0;
 
-	for(int i = 0; i < n - 1; i++){
+	for(int i = 0; i < n - 1; i++) {
 		int minVertex = findMinVertex(distance, visited, n);
 		visited[minVertex] = true;
-		for(int j = 0; j < n; j++){
-			if(graph[minVertex][j].second != 0 && !visited[j]){
+		for(int j = 0; j < n; j++) {
+			if(graph[minVertex][j].second != 0 && !visited[j]) {
 				int dist = distance[minVertex] + graph[minVertex][j].second;
+				int c = fare[minVertex] + graph[minVertex][j].first;
 				if(dist < distance[j]){
 					distance[j] = dist;
+					fare[j] = c;
 				}
 			}
 		}
 	}
-	int ans = distance[dest];
+	int ans1 = distance[dest];
+	int ans2 = fare[dest];
 	delete [] visited;
 	delete [] distance;
-	return ans;
+	delete [] fare;
+	pair<int, int> p;
+	p.first = ans1;
+	p.second = ans2;
+	return p;
 }
 
-void Shortest_Path_Source_To_All(pair<int, int> graph[][20], int n, int source){
+void Shortest_Path_Source_To_All(pair<int, int> graph[][20], int n, int source) {
 	int* distance = new int[n];
 	bool* visited = new bool[n];
+	int* fare = new int[n];
 
-	for(int i = 0; i < n; i++){
+	for(int i = 0; i < n; i++) {
 		distance[i] = INT_MAX;
 		visited[i] = false;
+		fare[i] = INT_MAX;
 	}
 
 	distance[source] = 0;
+	fare[source] = 0;
 
-	for(int i = 0; i < n - 1; i++){
+	for(int i = 0; i < n - 1; i++) {
 		int minVertex = findMinVertex(distance, visited, n);
 		visited[minVertex] = true;
-		for(int j = 0; j < n; j++){
-			if(graph[minVertex][j].second != 0 && !visited[j]){
+		for(int j = 0; j < n; j++) {
+			if(graph[minVertex][j].second != 0 && !visited[j]) {
 				int dist = distance[minVertex] + graph[minVertex][j].second;
-				if(dist < distance[j]){
+				int c = fare[minVertex] + graph[minVertex][j].first;
+				if(dist < distance[j]) {
 					distance[j] = dist;
+					fare[j] = c;
 				}
 			}
 		}
 	}
-	cout << "Source " << "Destination " << "Shortest Distance" << endl;
+	cout << "Source  " << "Destination  " << "Shortest Distance   " << "Fare" << endl;
 	for(int i = 0; i < n; i++){
-		cout << source << "      " << i << "           " << distance[i] << endl;
+		cout << source << "         " << i << "              " << distance[i] << "                " << fare[i] << endl;
 	}
 	delete [] visited;
 	delete [] distance;
+	delete [] fare;
 }
 
-int MinCostPath(pair<int, int> graph[][20], int n, int source, int dest){
+pair<int, int> MinCostPath(pair<int, int> graph[][20], int n, int source, int dest) {
 	int* cost = new int[n];
 	bool* visited = new bool[n];
+	int* distance = new int[n];
 
-	for(int i = 0; i < n; i++){
+	for(int i = 0; i < n; i++) {
 		cost[i] = INT_MAX;
 		visited[i] = false;
+		distance[i] = INT_MAX;
 	}
 
 	cost[source] = 0;
+	distance[source] = 0;
 
-	for(int i = 0; i < n - 1; i++){
+	for(int i = 0; i < n - 1; i++) {
 		int minVertex = findMinVertex(cost, visited, n);
 		visited[minVertex] = true;
-		for(int j = 0; j < n; j++){
-			if(graph[minVertex][j].first != 0 && !visited[j]){
+		for(int j = 0; j < n; j++) {
+			if(graph[minVertex][j].first != 0 && !visited[j]) {
 				int c = cost[minVertex] + graph[minVertex][j].first;
-				if(c < cost[j]){
+				int dist = distance[minVertex] + graph[minVertex][j].second;
+				if(c < cost[j]) {
 					cost[j] = c;
+					distance[j] = dist;
 				}
 			}
 		}
@@ -114,14 +135,18 @@ int MinCostPath(pair<int, int> graph[][20], int n, int source, int dest){
 	/*for(int i = 0; i < n; i++){
 		cout << i << " " << cost[i] << endl;
 	}*/
-	int ans = cost[dest];
+	int ans1 = cost[dest];
+	int ans2 = distance[dest];
 	delete [] visited;
 	delete [] cost;
-	return ans;
+	delete [] distance;
+	pair<int, int> p;
+	p.first = ans1;
+	p.second = ans2;
+	return p;
 }
 
-void addAirport(pair<int, int> graph[][20], int& n)
-{
+void addAirport(pair<int, int> graph[][20], int& n) {
     n++;
     for (int i = 0; i < n; ++i) {
         graph[i][n - 1].first = 0;
@@ -133,9 +158,8 @@ void addAirport(pair<int, int> graph[][20], int& n)
     print(graph, n);
 }
 
-void deleteAirport(pair<int, int> graph[][20], int& n, int x)
-{
-    if (x > n) {
+void deleteAirport(pair<int, int> graph[][20], int& n, int x) {
+    if (x >= n) {
         cout << "Airport not present!" << endl;
         return;
     }
@@ -157,7 +181,7 @@ void deleteAirport(pair<int, int> graph[][20], int& n, int x)
 }
 
 bool hasPath(pair<int, int> graph[][20], int n, bool* visited, int v1, int v2) {
-    if (graph[v1][v2].first >= 1) {
+    if (graph[v1][v2].first != 1) {
         return true;
     }
     visited[v1] = true;
@@ -185,8 +209,8 @@ bool hasPathHelper(pair<int, int> graph[][20], int n, int v1, int v2) {
     return ans;
 }
 
-void addRoute(pair<int, int> graph[][20],int n, int& e, int x, int y, int fare, int distance)  {
-    if ((x >= n) || (y > n)) {
+void addRoute(pair<int, int> graph[][20],int n, int& e, int x, int y, int fare, int distance) {
+    if ((x >= n) || (y >= n)) {
         cout << "Airport does not exists!";
     }
     else if (x == y) {
@@ -213,7 +237,7 @@ void addRoute(pair<int, int> graph[][20],int n, int& e, int x, int y, int fare, 
 }
 
 void removeRoute(pair<int, int> graph[][20], int n, int& e, int x, int y) {
-    if ((x >= n) || (y > n)) {
+    if ((x >= n) || (y >= n)) {
         cout << "Airport does not exists!" << endl;
     }
     else if (x == y) {
@@ -234,7 +258,7 @@ void removeRoute(pair<int, int> graph[][20], int n, int& e, int x, int y) {
 }
 
 void updateRoute(pair<int, int> graph[][20], int n, int x, int y, int fare, int distance) {
-    if ((x >= n) || (y > n)) {
+    if ((x >= n) || (y >= n)) {
         cout << "Airport does not exists!" << endl;
         return;
     }
@@ -257,6 +281,7 @@ void updateRoute(pair<int, int> graph[][20], int n, int x, int y, int fare, int 
 }
 
 int main() {
+    cout << "Enter no. of Airports and Routes : " << endl;
     int n, e;
     cin >> n >> e;
     pair<int, int> graph[20][20];
@@ -267,6 +292,7 @@ int main() {
         }
     }
 
+    cout << "Enter source, destination, fare, distance : " << endl;
     for (int i = 0; i < e; i++) {
         int a, b, fare, distance;
         cin >> a >> b >> fare >> distance;
@@ -327,7 +353,9 @@ int main() {
             int x, y;
             cout << "Enter source and destination : " << endl;
             cin >> x >> y;
-            cout << Shortest_Path(graph, n, x, y) << endl;
+            pair<int, int> p = Shortest_Path(graph, n, x, y);
+            cout << "Shortest distance = " << p.first << endl;
+            cout << "Cost of this path = " << p.second << endl;
         }
         else if (choice == 7) {
             int x;
@@ -344,11 +372,14 @@ int main() {
             int x, y;
             cout << "Enter source and destination : " << endl;
             cin >> x >> y;
-            cout << MinCostPath(graph, n, x, y) << endl;
+            pair<int, int> p  = MinCostPath(graph, n, x, y);
+            cout << "Minimum fare = " << p.first << endl;
+            cout << "Distance covered by min cost path = " << p.second << endl;
         }
         else {
             cout << "Invalid Choice" << endl;
         }
+        cout << endl;
         cout << "Enter your choice : " << endl;
         cin >> choice;
     }
